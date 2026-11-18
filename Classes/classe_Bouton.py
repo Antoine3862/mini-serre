@@ -25,19 +25,19 @@ class classe_Bouton:
         )
         maintenant = time.ticks_ms()
         self.boutons = {
-            numero: {
+            broche: {
                 "nom": nom,
                 "pin": Pin(broche, Pin.IN, Pin.PULL_UP),
                 "date": time.ticks_add(maintenant, -501),
                 "status": False,
             }
-            for numero, (nom, broche) in enumerate(boutons_config, start=1)
+            for nom, broche in boutons_config
         }
 
-        for numero, bouton in self.boutons.items():
+        for broche, bouton in self.boutons.items():
             bouton["pin"].irq(
                 trigger=Pin.IRQ_FALLING,
-                handler=lambda pin, n=numero: self._bouton_handler(pin, n),
+                handler=lambda pin, n=broche: self._bouton_handler(pin, n),
             )
 
     def _bouton_handler(self, pin, numero):
@@ -47,9 +47,9 @@ class classe_Bouton:
             bouton["status"] = True
             bouton["date"] = maintenant
 
-    def get_status(self, numero):
+    def get_status(self, broche):
         """Retourne True une seule fois par appui detecte."""
-        bouton = self.boutons[numero]
+        bouton = self.boutons[broche]
         if bouton["status"]:
             bouton["status"] = False
             return True
@@ -57,13 +57,13 @@ class classe_Bouton:
 
     def auto_test(self, timeout_ms=10000):
         """Demande un appui sur chacun des cinq boutons."""
-        for numero, bouton in self.boutons.items():
+        for broche, bouton in self.boutons.items():
             print("Appuyez sur {} (delai : {} s).".format(
                 bouton["nom"], timeout_ms // 1000
             ))
             debut = time.ticks_ms()
             while time.ticks_diff(time.ticks_ms(), debut) < timeout_ms:
-                if self.get_status(numero):
+                if self.get_status(broche):
                     print("Bouton {} : OK".format(bouton["nom"]))
                     break
                 time.sleep_ms(10)

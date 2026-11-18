@@ -20,6 +20,13 @@ class classe_EcranLCD:
             raise RuntimeError("Aucun ecran I2C detecte.")
         self.ecran = I2cLcd(self.i2c, adresses[0], 2, 16)
 
+    def afficher(self, ligne1="", ligne2=""):
+        """Affiche deux lignes en effacant les caracteres restants."""
+        for numero, texte in enumerate((ligne1, ligne2)):
+            self.ecran.move_to(0, numero)
+            texte = str(texte)[:self.ecran.num_columns]
+            self.ecran.putstr(texte.ljust(self.ecran.num_columns))
+
     def auto_test(self):
         """Affiche un message de test puis efface l'ecran."""
         print("AUTO TEST classe_EcranLCD : affichage du message.")
